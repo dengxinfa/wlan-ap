@@ -9,17 +9,16 @@
  #endif /* CONFIG_IEEE80211R_AP */
  #ifndef CONFIG_NO_CTRL_IFACE
  	} else if (os_strcmp(buf, "ctrl_interface") == 0) {
-@@ -4996,8 +4998,22 @@ struct hostapd_config * hostapd_config_r
+@@ -4996,8 +4998,21 @@ struct hostapd_config * hostapd_config_r
  
  	fclose(f);
  
 -	for (i = 0; i < conf->num_bss; i++)
-+#define _MACSTR "%02x%02x%02x%02x%02x%02x"
 +	for (i = 0; i < conf->num_bss; i++) {
  		hostapd_set_security_params(conf->bss[i], 1);
-+		if (*conf->bss[i]->ft_key) {
++		if (*conf->bss[i]->ft_key && *conf->bss[i]->nas_identifier) {
 +			u8 buffer[128];
-+			sprintf(buffer, MACSTR " " _MACSTR " %s", MAC2STR(conf->bss[i]->bssid), MAC2STR(conf->bss[i]->bssid), conf->bss[i]->ft_key);
++			sprintf(buffer, MACSTR " %s %s", MAC2STR(conf->bss[i]->bssid), *conf->bss[i]->nas_identifier, conf->bss[i]->ft_key);
 +			add_r0kh(conf->bss[i], buffer);
 +			sprintf(buffer, "ff:ff:ff:ff:ff:ff * %s", conf->bss[i]->ft_key);
 +			add_r0kh(conf->bss[i], buffer);
@@ -39,7 +38,7 @@
  	int pmk_r1_push;
  	int ft_over_ds;
  	int ft_psk_generate_local;
-+	u8 ft_key[33];
++	u8 ft_key[65];
  #endif /* CONFIG_IEEE80211R_AP */
  	int disable_gtk;
  	int ap_mlme;
